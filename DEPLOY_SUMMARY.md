@@ -48,7 +48,14 @@ vercel --prod
 - And more...
 
 ### 🔗 Live Demo
-After deployment: `https://your-project.vercel.app`
+**🎉 DEPLOYED SUCCESSFULLY! ✅ FIXED**
+- **Production**: https://code-formater.vercel.app
+- **Latest**: https://code-formater-hoyisvius-youthis321s-projects.vercel.app
+- **Dashboard**: https://vercel.com/youthis321s-projects/code-formater
+
+### 🔧 Issue Fixed
+❌ **Previous Error**: `ReferenceError: require is not defined in ES module scope`  
+✅ **Solution**: Converted CommonJS to ES Module syntax in `api/index.js`
 
 ---
-**🚀 Ready to deploy!**
+**🚀 CodeToPrint sudah live dan working!**
