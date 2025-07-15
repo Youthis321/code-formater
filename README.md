@@ -46,7 +46,8 @@
 ## 🚀 Quick Start
 
 ### Prerequisites
-- [Bun](https://bun.sh/) v1.0+
+- [Bun](https://bun.sh/) v1.0+ (untuk development)
+- [Node.js](https://nodejs.org/) v18+ (untuk production/Vercel)
 
 ### Installation
 
@@ -70,6 +71,22 @@
    ```
    http://localhost:3000
    ```
+
+## 🌐 Deployment ke Vercel
+
+### Quick Deploy Button
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/username/Program-Code-Formatter)
+
+### Manual Deploy
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel --prod
+```
+
+**📖 Detail deployment guide**: Lihat [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## 📖 Cara Penggunaan
 
