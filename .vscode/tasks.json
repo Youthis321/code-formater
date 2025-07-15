@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start CodeToPrint Development Server",
+			"type": "shell",
+			"command": "bun",
+			"args": [
+				"run",
+				"dev"
+			],
+			"group": "build",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

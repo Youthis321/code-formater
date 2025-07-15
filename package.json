@@ -1,0 +1,35 @@
+{
+  "name": "code-to-print",
+  "version": "1.0.0",
+  "description": "Universal Code Formatter untuk Print - Format kode dari berbagai bahasa pemrograman",
+  "main": "index.ts",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch index.ts",
+    "start": "bun run index.ts",
+    "build": "bun build index.ts --outdir ./dist --target bun",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "code-formatter",
+    "print",
+    "syntax-highlighting",
+    "elysia",
+    "bun",
+    "typescript"
+  ],
+  "author": "Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@elysiajs/html": "^1.3.0",
+    "@elysiajs/static": "^1.3.0",
+    "elysia": "^1.3.5"
+  }
+}
