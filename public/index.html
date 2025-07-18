@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodeToPrint - Universal Code Formatter</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- CodeMirror 6 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@codemirror/theme-one-dark@6.1.2/dist/index.css">
+    
+    <!-- Prism CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" id="theme-dark" disabled>
     <link rel="stylesheet" href="/static/styles.css">
@@ -17,81 +27,111 @@
         </header>
 
         <!-- Controls -->
-        <div class="controls">
-            <div class="control-group">
-                <label for="codeFile">📂 Upload File:</label>
-                <input type="file" id="codeFile" accept=".py,.js,.html,.java,.css,.ts,.jsx,.tsx,.json,.xml,.php,.cpp,.c,.cs,.go,.rb,.swift,.kt">
+        <div class="section-container">
+            <div class="section-toggle" role="button" tabindex="0" aria-expanded="true">
+                <h3>🎛️ Controls</h3>
+                <span class="toggle-icon">▼</span>
             </div>
+            <div class="controls" id="controlsSection">
+                <div class="control-group">
+                    <label for="codeFile">📂 Upload File:</label>
+                    <input type="file" id="codeFile" accept=".py,.js,.html,.java,.css,.ts,.jsx,.tsx,.json,.xml,.php,.cpp,.c,.cs,.go,.rb,.swift,.kt">
+                </div>
 
-            <div class="control-group">
-                <label for="languageSelect">🔤 Bahasa:</label>
-                <select id="languageSelect">
-                    <option value="python">Python (.py)</option>
-                    <option value="javascript">JavaScript (.js)</option>
-                    <option value="html">HTML (.html)</option>
-                    <option value="java">Java (.java)</option>
-                    <option value="css">CSS (.css)</option>
-                    <option value="typescript">TypeScript (.ts)</option>
-                    <option value="json">JSON (.json)</option>
-                    <option value="php">PHP (.php)</option>
-                    <option value="cpp">C++ (.cpp)</option>
-                    <option value="csharp">C# (.cs)</option>
-                </select>
-            </div>
+                <div class="control-group">
+                    <label for="languageSelect">🔤 Bahasa:</label>
+                    <select id="languageSelect">
+                        <option value="python">Python (.py)</option>
+                        <option value="javascript">JavaScript (.js)</option>
+                        <option value="html">HTML (.html)</option>
+                        <option value="java">Java (.java)</option>
+                        <option value="css">CSS (.css)</option>
+                        <option value="typescript">TypeScript (.ts)</option>
+                        <option value="json">JSON (.json)</option>
+                        <option value="php">PHP (.php)</option>
+                        <option value="cpp">C++ (.cpp)</option>
+                        <option value="csharp">C# (.cs)</option>
+                    </select>
+                </div>
 
-            <div class="control-group">
-                <label for="themeSelect">🎨 Theme:</label>
-                <select id="themeSelect">
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                </select>
+                <div class="control-group">
+                    <label for="themeSelect">🎨 Theme:</label>
+                    <select id="themeSelect">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
             </div>
         </div>
 
         <!-- Format Settings -->
-        <div class="settings">
-            <h3>⚙️ Pengaturan Format</h3>
-            <div class="settings-grid">
-                <div class="setting-item">
-                    <label for="fontSize">Font Size:</label>
-                    <input type="range" id="fontSize" min="10" max="20" value="14">
-                    <span id="fontSizeValue">14px</span>
-                </div>
-                
-                <div class="setting-item">
-                    <label for="lineHeight">Line Height:</label>
-                    <input type="range" id="lineHeight" min="1" max="2" step="0.1" value="1.5">
-                    <span id="lineHeightValue">1.5</span>
-                </div>
-                
-                <div class="setting-item">
-                    <label for="maxWidth">Max Width:</label>
-                    <input type="range" id="maxWidth" min="600" max="1200" value="800">
-                    <span id="maxWidthValue">800px</span>
-                </div>
-                
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="showLineNumbers" checked>
-                        Tampilkan Nomor Baris
-                    </label>
-                </div>
-                
-                <div class="setting-item">
-                    <label>
-                        <input type="checkbox" id="wrapCode">
-                        Word Wrap
-                    </label>
+        <div class="section-container">
+            <div class="section-toggle" role="button" tabindex="0" aria-expanded="true">
+                <h3>⚙️ Pengaturan Format</h3>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="settings" id="settingsSection">
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="fontSize">Font Size:</label>
+                        <input type="range" id="fontSize" min="10" max="20" value="14">
+                        <span id="fontSizeValue">14px</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="lineHeight">Line Height:</label>
+                        <input type="range" id="lineHeight" min="1" max="2" step="0.1" value="1.5">
+                        <span id="lineHeightValue">1.5</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label for="maxWidth">Max Width:</label>
+                        <input type="range" id="maxWidth" min="600" max="1200" value="800">
+                        <span id="maxWidthValue">800px</span>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="showLineNumbers" checked>
+                            Tampilkan Nomor Baris
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="wrapCode">
+                            Word Wrap
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Code Input -->
-        <div class="code-input-section">
-            <h3>📝 Kode Input</h3>
-            <textarea id="codeInput" placeholder="Paste kode Anda di sini atau upload file..."></textarea>
+        <div class="code-input-section" id="codeInputSection">
+            <div class="section-header">
+                <h3>📝 Kode Input</h3>
+                <div class="header-buttons">
+                    <button id="copyInputBtn" class="header-btn" title="Copy kode dari input">
+                        📋 Copy
+                    </button>
+                    <button id="pasteInputBtn" class="header-btn" title="Paste kode ke input">
+                        📥 Paste
+                    </button>
+                    <button id="fullscreenBtn" class="header-btn" title="Toggle Fullscreen Editor">
+                        🔳 Fullscreen
+                    </button>
+                </div>
+            </div>
+            <div id="codeEditorContainer" class="code-editor-container">
+                <div id="codeEditor" class="code-editor"></div>
+                <textarea id="codeInput" placeholder="Paste kode Anda di sini atau upload file..." style="display: none;"></textarea>
+            </div>
             <div class="action-buttons">
                 <button id="formatBtn">🎯 Format Kode</button>
+                <button id="previewCodeBtn">👁️ Preview Code</button>
+                <button id="downloadImageBtn">📷 Download Standard</button>
+                <button id="downloadFormattedBtn">📷👀 Download Formatted</button>
                 <button id="clearBtn">🗑️ Clear</button>
                 <button id="printBtn">🖨️ Print</button>
             </div>
@@ -106,6 +146,38 @@
             </div>
             <div class="code-preview" id="codePreview">
                 <pre><code id="formattedCode"></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📱 Preview Code</h3>
+                <button id="closeModal" class="close-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContainer" class="preview-container">
+                    <div class="preview-frame">
+                        <div class="preview-header">
+                            <div class="preview-dots">
+                                <span class="dot red"></span>
+                                <span class="dot yellow"></span>
+                                <span class="dot green"></span>
+                            </div>
+                            <div class="preview-title" id="previewTitle">python.py</div>
+                        </div>
+                        <div class="preview-code-area">
+                            <pre id="previewCodeContent"><code id="previewFormattedCode"></code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="downloadFromPreview" class="modal-btn download-btn">📷 Download Standard</button>
+                <button id="downloadFormattedFromPreview" class="modal-btn download-btn">📄 Download Formatted</button>
+                <button id="closePreview" class="modal-btn cancel-btn">✕ Close</button>
             </div>
         </div>
     </div>
@@ -133,6 +205,31 @@
     </style>
 
     <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Enhanced Textarea with CodeMirror-like features -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/mode-c_cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/theme-monokai.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/theme-github.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.23.4/ext-language_tools.min.js"></script>
+    
+    <script>
+        // Initialize Ace Editor
+        window.addEventListener('load', function() {
+            console.log('Ace Editor scripts loaded successfully');
+            window.dispatchEvent(new CustomEvent('ace-ready'));
+        });
+    </script>
+    
+    <!-- Prism Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
