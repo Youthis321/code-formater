@@ -2,8 +2,48 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>CodeToPrint - Universal Code Formatter</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Format and display code from multiple programming languages in a print-friendly format. Support Python, JavaScript, HTML, Java, CSS, TypeScript and more.">
+    <meta name="keywords" content="code formatter, syntax highlighter, print code, programming, developer tools">
+    <meta name="author" content="CodeToPrint">
+    <meta name="robots" content="index, follow">
+    
+    <!-- PWA App Meta -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CodeToPrint">
+    <meta name="application-name" content="CodeToPrint">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-navbutton-color" content="#667eea">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/icons/icon-32x32.svg">
+    <link rel="icon" type="image/svg+xml" sizes="16x16" href="/icons/icon-16x16.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.svg">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.svg">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.svg">
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-128x128.svg">
+    <link rel="apple-touch-icon" sizes="114x114" href="/icons/icon-128x128.svg">
+    <link rel="apple-touch-icon" sizes="76x76" href="/icons/icon-96x96.svg">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.svg">
+    <link rel="apple-touch-icon" sizes="60x60" href="/icons/icon-72x72.svg">
+    <link rel="apple-touch-icon" sizes="57x57" href="/icons/icon-72x72.svg">
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg">
+    <meta name="msapplication-square70x70logo" content="/icons/icon-72x72.svg">
+    <meta name="msapplication-square150x150logo" content="/icons/icon-152x152.svg">
+    <meta name="msapplication-wide310x150logo" content="/icons/icon-192x192.svg">
+    <meta name="msapplication-square310x310logo" content="/icons/icon-384x384.svg">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +56,7 @@
     <!-- Prism CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" id="theme-dark" disabled>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
@@ -228,12 +268,281 @@
             window.dispatchEvent(new CustomEvent('ace-ready'));
         });
     </script>
+    </div>
+
+    <!-- PWA Install Banner -->
+    <div id="pwaInstallBanner" class="pwa-install-banner" style="display: none;">
+        <div class="pwa-banner-content">
+            <div class="pwa-banner-info">
+                <div class="pwa-banner-icon">📱</div>
+                <div class="pwa-banner-text">
+                    <h3>Install CodeToPrint</h3>
+                    <p>Install aplikasi untuk akses lebih cepat dan bisa digunakan offline!</p>
+                </div>
+            </div>
+            <div class="pwa-banner-actions">
+                <button id="pwaInstallBtn" class="btn btn-primary">
+                    <span>📥 Install</span>
+                </button>
+                <button id="pwaDismissBtn" class="btn btn-secondary">
+                    <span>✕ Tidak</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Update Banner -->
+    <div id="pwaUpdateBanner" class="pwa-update-banner" style="display: none;">
+        <div class="pwa-banner-content">
+            <div class="pwa-banner-info">
+                <div class="pwa-banner-icon">🔄</div>
+                <div class="pwa-banner-text">
+                    <h3>Update Tersedia</h3>
+                    <p>Versi baru CodeToPrint sudah tersedia!</p>
+                </div>
+            </div>
+            <div class="pwa-banner-actions">
+                <button id="pwaUpdateBtn" class="btn btn-primary">
+                    <span>🔄 Update</span>
+                </button>
+                <button id="pwaUpdateDismissBtn" class="btn btn-secondary">
+                    <span>✕ Nanti</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline Indicator -->
+    <div id="offlineIndicator" class="offline-indicator" style="display: none;">
+        <div class="offline-content">
+            <span class="offline-icon">📡</span>
+            <span class="offline-text">Mode Offline</span>
+        </div>
+    </div>
+    
+    <!-- Loading Splash for PWA -->
+    <div id="pwaSplash" class="pwa-splash" style="display: none;">
+        <div class="pwa-splash-content">
+            <div class="pwa-splash-logo">🚀</div>
+            <h1>CodeToPrint</h1>
+            <p>Universal Code Formatter</p>
+            <div class="pwa-splash-loader">
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+                <div class="loader-dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Ace Editor Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.0/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.0/ext-language_tools.js"></script>
+    <script>
+        // Dispatch ace ready event after scripts load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof ace !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('ace-ready'));
+            }
+        });
+    </script>
     
     <!-- Prism Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
-    <script src="/static/script.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('/sw.js', {
+                        scope: '/'
+                    });
+                    
+                    console.log('✅ Service Worker registered successfully:', registration.scope);
+                    
+                    // Check for updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // Show update banner
+                                    showUpdateBanner(registration);
+                                }
+                            });
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('❌ Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (event) => {
+            console.log('💡 PWA install prompt available');
+            event.preventDefault();
+            deferredPrompt = event;
+            
+            // Show install banner after a delay
+            setTimeout(() => {
+                showInstallBanner();
+            }, 5000);
+        });
+
+        // PWA Install Banner Functions
+        function showInstallBanner() {
+            const banner = document.getElementById('pwaInstallBanner');
+            const installBtn = document.getElementById('pwaInstallBtn');
+            const dismissBtn = document.getElementById('pwaDismissBtn');
+            
+            if (banner && !localStorage.getItem('pwa-install-dismissed')) {
+                banner.style.display = 'block';
+                banner.classList.add('banner-slide-in');
+                
+                installBtn.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log('PWA install result:', outcome);
+                        deferredPrompt = null;
+                        hideBanner(banner);
+                    }
+                });
+                
+                dismissBtn.addEventListener('click', () => {
+                    localStorage.setItem('pwa-install-dismissed', 'true');
+                    hideBanner(banner);
+                });
+            }
+        }
+
+        function showUpdateBanner(registration) {
+            const banner = document.getElementById('pwaUpdateBanner');
+            const updateBtn = document.getElementById('pwaUpdateBtn');
+            const dismissBtn = document.getElementById('pwaUpdateDismissBtn');
+            
+            if (banner) {
+                banner.style.display = 'block';
+                banner.classList.add('banner-slide-in');
+                
+                updateBtn.addEventListener('click', () => {
+                    if (registration.waiting) {
+                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                    }
+                });
+                
+                dismissBtn.addEventListener('click', () => {
+                    hideBanner(banner);
+                });
+            }
+        }
+
+        function hideBanner(banner) {
+            banner.classList.add('banner-slide-out');
+            setTimeout(() => {
+                banner.style.display = 'none';
+                banner.classList.remove('banner-slide-in', 'banner-slide-out');
+            }, 300);
+        }
+
+        // Offline/Online Detection
+        function updateOnlineStatus() {
+            const indicator = document.getElementById('offlineIndicator');
+            
+            if (navigator.onLine) {
+                indicator.style.display = 'none';
+                console.log('🌐 App is online');
+            } else {
+                indicator.style.display = 'flex';
+                console.log('📡 App is offline');
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        
+        // Initial online status check
+        document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+
+        // PWA Installed Detection
+        window.addEventListener('appinstalled', (event) => {
+            console.log('🎉 PWA was installed successfully!');
+            localStorage.setItem('pwa-installed', 'true');
+            
+            // Hide install banner if visible
+            const banner = document.getElementById('pwaInstallBanner');
+            if (banner) {
+                hideBanner(banner);
+            }
+            
+            // Show success message
+            if (typeof showNotification === 'function') {
+                showNotification('🎉 CodeToPrint berhasil diinstall!', 'success');
+            }
+        });
+
+        // Handle URL parameters for PWA shortcuts
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            
+            if (action === 'format' && typeof formatCode === 'function') {
+                // Auto focus on code input for format action
+                setTimeout(() => {
+                    const codeInput = document.getElementById('codeInput');
+                    if (codeInput) codeInput.focus();
+                }, 1000);
+            } else if (action === 'new' && typeof clearCode === 'function') {
+                // Clear code for new action
+                setTimeout(() => {
+                    clearCode();
+                }, 500);
+            }
+        });
+
+        // PWA Display Mode Detection
+        function getPWADisplayMode() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            const isMinimalUI = window.matchMedia('(display-mode: minimal-ui)').matches;
+            const isFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
+            
+            if (isStandalone) {
+                return 'standalone';
+            } else if (isMinimalUI) {
+                return 'minimal-ui';
+            } else if (isFullscreen) {
+                return 'fullscreen';
+            } else {
+                return 'browser';
+            }
+        }
+
+        // Add PWA class to body when in standalone mode
+        document.addEventListener('DOMContentLoaded', () => {
+            const displayMode = getPWADisplayMode();
+            console.log('📱 PWA Display Mode:', displayMode);
+            
+            if (displayMode === 'standalone') {
+                document.body.classList.add('pwa-standalone');
+                localStorage.setItem('pwa-mode', 'standalone');
+            }
+        });
+
+        console.log('🚀 PWA features initialized!');
+    </script>
+    
+    <script src="script.js"></script>
 </body>
 </html>

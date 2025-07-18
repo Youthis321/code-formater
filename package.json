@@ -11,8 +11,17 @@
     "start:node": "node api/index.js",
     "build": "bun build index.ts --outdir ./dist --target bun",
     "clean": "rm -rf dist",
-    "deploy": "vercel --prod",
-    "deploy:preview": "vercel"
+    "deploy": "npm run pwa:verify && vercel --prod",
+    "deploy:preview": "npm run pwa:verify && vercel",
+    "test:endpoints": "node test-endpoints.js",
+    "pwa:test": "echo 'Opening PWA test page...' && start http://localhost:3000/pwa-test.html",
+    "pwa:icons": "node generate-icons.js",
+    "pwa:verify": "node pwa-verify.js",
+    "pwa:audit": "echo 'Run Lighthouse audit in Chrome DevTools for PWA score'",
+    "pwa:install": "echo 'Visit http://localhost:3000 in Chrome and look for install prompt'",
+    "pwa:full-test": "npm run pwa:verify && npm run test:endpoints && npm run pwa:test",
+    "install:trigger": "node trigger-install.js",
+    "install:test": "echo 'Opening install test page...' && start http://localhost:3000/install-test"
   },
   "keywords": [
     "code-formatter",

@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Disallow admin/test pages
+Disallow: /pwa-test.html
+Disallow: /icon-generator.html
+
+# Allow PWA files
+Allow: /manifest.json
+Allow: /sw.js
+Allow: /icons/
+
+# Cache duration for crawlers
+Crawl-delay: 1

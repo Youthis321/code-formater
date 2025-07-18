@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Installation Test</title>
+    <link rel="icon" href="/icons/icon-32x32.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .status .icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #218838;
+        }
+        .button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .log {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .hero h1 {
+            font-size: 3em;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>📱 PWA Installation Test</h1>
+        <p>Test dan trigger install prompt untuk CodeToPrint PWA</p>
+    </div>
+
+    <div class="card">
+        <h3>🔍 PWA Status Check</h3>
+        <div id="pwa-status">
+            <div class="status">
+                <span class="icon">⏳</span>
+                <span>Checking PWA status...</span>
+            </div>
+        </div>
+        <button class="button" onclick="checkPWAStatus()">Refresh Status</button>
+    </div>
+
+    <div class="card">
+        <h3>🎯 Engagement Simulator</h3>
+        <p>Simulasi aktivitas user untuk trigger install prompt:</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="engagement-progress"></div>
+        </div>
+        <div id="engagement-status">Ready to start engagement simulation</div>
+        
+        <div style="margin: 20px 0;">
+            <button class="button" onclick="startEngagement()">🚀 Start Engagement</button>
+            <button class="button" onclick="triggerInstall()">📲 Manual Install</button>
+            <button class="button" onclick="clearAll()">🔄 Reset All</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📊 Activity Log</h3>
+        <div class="log" id="activity-log">Starting PWA installation test...\n</div>
+    </div>
+
+    <script>
+        let engagementScore = 0;
+        let installPromptEvent = null;
+        let engagementTimer = null;
+
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installPromptEvent = e;
+            log('🎉 Install prompt available!');
+            updateStatus();
+        });
+
+        // Listen for app installed
+        window.addEventListener('appinstalled', (e) => {
+            log('✅ PWA installed successfully!');
+            installPromptEvent = null;
+        });
+
+        function log(message) {
+            const logElement = document.getElementById('activity-log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        async function checkPWAStatus() {
+            const statusDiv = document.getElementById('pwa-status');
+            let statusHTML = '';
+
+            // Check Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        statusHTML += '<div class="status"><span class="icon">✅</span><span>Service Worker: Active</span></div>';
+                        log('✅ Service Worker registered and active');
+                    } else {
+                        statusHTML += '<div class="status"><span class="icon">❌</span><span>Service Worker: Not found</span></div>';
+                        log('❌ Service Worker not registered');
+                    }
+                } catch (error) {
+                    statusHTML += '<div class="status"><span class="icon">❌</span><span>Service Worker: Error</span></div>';
+                    log('❌ Service Worker error: ' + error.message);
+                }
+            }
+
+            // Check if PWA is installable
+            if (installPromptEvent) {
+                statusHTML += '<div class="status"><span class="icon">🎯</span><span>Install Prompt: Ready!</span></div>';
+                log('🎯 Install prompt is ready to show');
+            } else {
+                statusHTML += '<div class="status"><span class="icon">⏳</span><span>Install Prompt: Not available yet</span></div>';
+                log('⏳ Install prompt not available yet');
+            }
+
+            // Check if already installed
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                statusHTML += '<div class="status"><span class="icon">📱</span><span>PWA: Already installed</span></div>';
+                log('📱 PWA is already installed');
+            } else {
+                statusHTML += '<div class="status"><span class="icon">🌐</span><span>PWA: Running in browser</span></div>';
+                log('🌐 PWA running in browser mode');
+            }
+
+            // Check manifest
+            try {
+                const response = await fetch('/manifest.json');
+                if (response.ok) {
+                    statusHTML += '<div class="status"><span class="icon">✅</span><span>Manifest: Valid</span></div>';
+                    log('✅ Manifest.json loaded successfully');
+                } else {
+                    statusHTML += '<div class="status"><span class="icon">❌</span><span>Manifest: Error</span></div>';
+                    log('❌ Manifest.json failed to load');
+                }
+            } catch (error) {
+                statusHTML += '<div class="status"><span class="icon">❌</span><span>Manifest: Network error</span></div>';
+                log('❌ Manifest network error: ' + error.message);
+            }
+
+            statusDiv.innerHTML = statusHTML;
+        }
+
+        function updateStatus() {
+            const statusText = document.getElementById('engagement-status');
+            if (installPromptEvent) {
+                statusText.textContent = '🎉 Install prompt is ready! Click "Manual Install" to show it.';
+                statusText.style.color = '#28a745';
+            } else {
+                statusText.textContent = `Engagement score: ${engagementScore}/100 (need more interaction)`;
+                statusText.style.color = '#ffc107';
+            }
+        }
+
+        function updateProgress() {
+            const progressBar = document.getElementById('engagement-progress');
+            const percentage = Math.min(engagementScore, 100);
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        function startEngagement() {
+            if (engagementTimer) {
+                clearInterval(engagementTimer);
+            }
+
+            log('🚀 Starting engagement simulation...');
+            
+            engagementTimer = setInterval(() => {
+                // Simulate various user interactions
+                const actions = [
+                    'Scrolling page',
+                    'Clicking buttons', 
+                    'Viewing content',
+                    'Interacting with UI',
+                    'Reading documentation',
+                    'Testing features'
+                ];
+                
+                const action = actions[Math.floor(Math.random() * actions.length)];
+                engagementScore += Math.floor(Math.random() * 5) + 1;
+                
+                log(`📊 ${action} (+${Math.floor(Math.random() * 5) + 1} engagement)`);
+                updateProgress();
+                updateStatus();
+
+                if (engagementScore >= 100) {
+                    clearInterval(engagementTimer);
+                    log('🎯 Engagement threshold reached! Install prompt may appear soon.');
+                    
+                    // Simulate potential install prompt availability
+                    setTimeout(() => {
+                        if (!installPromptEvent) {
+                            log('💡 Tip: Try manual install or continue using the app for auto-prompt');
+                        }
+                    }, 2000);
+                }
+            }, 1000);
+        }
+
+        async function triggerInstall() {
+            if (installPromptEvent) {
+                log('📲 Showing install prompt...');
+                try {
+                    const result = await installPromptEvent.prompt();
+                    log(`User choice: ${result.outcome}`);
+                    
+                    if (result.outcome === 'accepted') {
+                        log('✅ User accepted installation!');
+                    } else {
+                        log('❌ User dismissed installation');
+                    }
+                    
+                    installPromptEvent = null;
+                    updateStatus();
+                } catch (error) {
+                    log('❌ Install prompt error: ' + error.message);
+                }
+            } else {
+                log('⚠️ Install prompt not available. Trying manual method...');
+                log('💡 Use Chrome menu > "Add to Home screen" for manual install');
+                alert('Install prompt not ready yet.\n\nManual install:\n1. Chrome menu (⋮)\n2. "Add to Home screen"\n3. Confirm installation');
+            }
+        }
+
+        function clearAll() {
+            log('🔄 Clearing all data and restarting...');
+            engagementScore = 0;
+            installPromptEvent = null;
+            
+            if (engagementTimer) {
+                clearInterval(engagementTimer);
+                engagementTimer = null;
+            }
+            
+            updateProgress();
+            updateStatus();
+            
+            // Clear browser data
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        registration.unregister();
+                        log('🔄 Service Worker unregistered');
+                    });
+                });
+            }
+            
+            // Clear caches
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                        log('🔄 Cache cleared: ' + name);
+                    });
+                });
+            }
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+
+        // Auto-check status on load
+        window.addEventListener('load', () => {
+            log('🎯 PWA Installation Test loaded');
+            checkPWAStatus();
+            updateStatus();
+        });
+
+        // Track real user engagement
+        let realEngagement = 0;
+        document.addEventListener('click', () => {
+            realEngagement++;
+            if (realEngagement % 5 === 0) {
+                log(`👆 Real clicks: ${realEngagement}`);
+            }
+        });
+
+        document.addEventListener('scroll', () => {
+            realEngagement++;
+        });
+    </script>
+</body>
+</html>

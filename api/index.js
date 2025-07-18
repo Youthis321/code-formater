@@ -50,6 +50,128 @@ export default (req, res) => {
       }
     }
 
+    // Handle Service Worker
+    if (url === '/sw.js') {
+      try {
+        const swPath = join(__dirname, '..', 'public', 'sw.js');
+        const swContent = readFileSync(swPath, 'utf-8');
+        res.setHeader('Content-Type', 'application/javascript');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Service-Worker-Allowed', '/');
+        res.status(200).send(swContent);
+        return;
+      } catch (error) {
+        res.status(404).json({ error: 'Service Worker not found' });
+        return;
+      }
+    }
+
+    // Handle Web App Manifest
+    if (url === '/manifest.json') {
+      try {
+        const manifestPath = join(__dirname, '..', 'public', 'manifest.json');
+        const manifestContent = readFileSync(manifestPath, 'utf-8');
+        res.setHeader('Content-Type', 'application/manifest+json');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.status(200).send(manifestContent);
+        return;
+      } catch (error) {
+        res.status(404).json({ error: 'Manifest not found' });
+        return;
+      }
+    }
+
+    // Handle PWA icons
+    if (url.startsWith('/icons/')) {
+      const iconPath = url.replace('/icons/', '');
+      const fullPath = join(__dirname, '..', 'public', 'icons', iconPath);
+      
+      try {
+        const content = readFileSync(fullPath);
+        const ext = iconPath.split('.').pop()?.toLowerCase();
+        
+        const contentType = ext === 'svg' ? 'image/svg+xml' : 'application/octet-stream';
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'public, max-age=31536000');
+        res.status(200).send(content);
+        return;
+      } catch (error) {
+        res.status(404).json({ error: 'Icon not found' });
+        return;
+      }
+    }
+
+    // Handle PWA test pages
+    if (url === '/pwa-test.html' || url === '/install-test' || url === '/android-ready') {
+      let fileName = '';
+      if (url === '/pwa-test.html') fileName = 'pwa-test.html';
+      else if (url === '/install-test') fileName = 'install-test.html';
+      else if (url === '/android-ready') fileName = 'android-ready.html';
+      
+      try {
+        const testPath = join(__dirname, '..', 'public', fileName);
+        const htmlContent = readFileSync(testPath, 'utf-8');
+        res.setHeader('Content-Type', 'text/html');
+        res.status(200).send(htmlContent);
+        return;
+      } catch (error) {
+        res.status(404).json({ error: `${fileName} not found` });
+        return;
+      }
+    }
+
+    // Handle other HTML files in public directory
+    if (url.endsWith('.html')) {
+      const fileName = url.substring(1); // Remove leading slash
+      try {
+        const filePath = join(__dirname, '..', 'public', fileName);
+        const htmlContent = readFileSync(filePath, 'utf-8');
+        res.setHeader('Content-Type', 'text/html');
+        res.status(200).send(htmlContent);
+        return;
+      } catch (error) {
+        res.status(404).json({ error: 'HTML file not found' });
+        return;
+      }
+    }
+
+    // Handle other static files from public directory
+    if (url !== '/' && !url.startsWith('/api/')) {
+      const fileName = url.substring(1); // Remove leading slash
+      const fullPath = join(__dirname, '..', 'public', fileName);
+      
+      try {
+        const content = readFileSync(fullPath);
+        const ext = fileName.split('.').pop()?.toLowerCase();
+        
+        const contentTypes = {
+          'css': 'text/css',
+          'js': 'application/javascript',
+          'html': 'text/html',
+          'png': 'image/png',
+          'jpg': 'image/jpeg',
+          'jpeg': 'image/jpeg',
+          'svg': 'image/svg+xml',
+          'ico': 'image/x-icon',
+          'txt': 'text/plain',
+          'xml': 'application/xml'
+        };
+        
+        const contentType = contentTypes[ext] || 'application/octet-stream';
+        res.setHeader('Content-Type', contentType);
+        
+        // Set appropriate cache headers
+        if (['css', 'js', 'svg', 'png', 'jpg', 'jpeg', 'ico'].includes(ext)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000');
+        }
+        
+        res.status(200).send(content);
+        return;
+      } catch (error) {
+        // Continue to next handler
+      }
+    }
+
     // Handle API routes
     if (url.startsWith('/api/format') && method === 'POST') {
       let body = '';

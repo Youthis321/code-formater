@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test - CodeToPrint</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .test-item {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4facfe;
+        }
+        .test-pass { border-left-color: #51cf66; }
+        .test-fail { border-left-color: #ff6b6b; }
+        .test-pending { border-left-color: #ffc107; }
+        button {
+            background: #4facfe;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #339af0; }
+        #results { margin-top: 20px; }
+        .icon { margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 PWA Feature Test - CodeToPrint</h1>
+        <p>Testing Progressive Web App capabilities...</p>
+        
+        <div id="results">
+            <div class="test-item test-pending" id="sw-test">
+                <span class="icon">⏳</span>
+                <strong>Service Worker:</strong> Testing...
+            </div>
+            
+            <div class="test-item test-pending" id="manifest-test">
+                <span class="icon">⏳</span>
+                <strong>Web App Manifest:</strong> Testing...
+            </div>
+            
+            <div class="test-item test-pending" id="install-test">
+                <span class="icon">⏳</span>
+                <strong>Install Prompt:</strong> Testing...
+            </div>
+            
+            <div class="test-item test-pending" id="offline-test">
+                <span class="icon">⏳</span>
+                <strong>Offline Support:</strong> Testing...
+            </div>
+            
+            <div class="test-item test-pending" id="icons-test">
+                <span class="icon">⏳</span>
+                <strong>PWA Icons:</strong> Testing...
+            </div>
+            
+            <div class="test-item test-pending" id="cache-test">
+                <span class="icon">⏳</span>
+                <strong>Cache Storage:</strong> Testing...
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button onclick="runTests()">🔄 Run Tests</button>
+            <button onclick="clearCache()">🗑️ Clear Cache</button>
+            <button onclick="testInstall()">📱 Test Install</button>
+            <button onclick="window.location.href='/index.html'">🏠 Back to App</button>
+        </div>
+        
+        <div id="debug" style="margin-top: 20px; font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; white-space: pre-wrap;"></div>
+    </div>
+
+    <script>
+        let debugLog = '';
+        
+        function log(message) {
+            console.log(message);
+            debugLog += new Date().toLocaleTimeString() + ': ' + message + '\n';
+            document.getElementById('debug').textContent = debugLog;
+        }
+        
+        function updateTestStatus(testId, status, message) {
+            const element = document.getElementById(testId);
+            element.className = `test-item test-${status}`;
+            
+            const icons = { pass: '✅', fail: '❌', pending: '⏳' };
+            element.innerHTML = `<span class="icon">${icons[status]}</span><strong>${element.querySelector('strong').textContent}</strong> ${message}`;
+        }
+        
+        async function runTests() {
+            log('Starting PWA tests...');
+            
+            // Test Service Worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        updateTestStatus('sw-test', 'pass', 'Active and registered');
+                        log('✅ Service Worker: Active');
+                    } else {
+                        updateTestStatus('sw-test', 'fail', 'Not registered');
+                        log('❌ Service Worker: Not registered');
+                    }
+                } catch (error) {
+                    updateTestStatus('sw-test', 'fail', 'Error: ' + error.message);
+                    log('❌ Service Worker error: ' + error.message);
+                }
+            } else {
+                updateTestStatus('sw-test', 'fail', 'Not supported');
+                log('❌ Service Worker: Not supported');
+            }
+            
+            // Test Manifest
+            try {
+                const response = await fetch('/manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    updateTestStatus('manifest-test', 'pass', `Found: ${manifest.name}`);
+                    log('✅ Manifest: ' + manifest.name);
+                } else {
+                    updateTestStatus('manifest-test', 'fail', 'Not found');
+                    log('❌ Manifest: Not found');
+                }
+            } catch (error) {
+                updateTestStatus('manifest-test', 'fail', 'Error loading');
+                log('❌ Manifest error: ' + error.message);
+            }
+            
+            // Test Install Prompt
+            if (window.deferredPrompt || localStorage.getItem('pwa-installed')) {
+                updateTestStatus('install-test', 'pass', 'Available or already installed');
+                log('✅ Install prompt: Available');
+            } else {
+                updateTestStatus('install-test', 'pending', 'Not available yet');
+                log('⏳ Install prompt: Not available yet');
+            }
+            
+            // Test Offline Support
+            if ('serviceWorker' in navigator && 'caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    if (cacheNames.length > 0) {
+                        updateTestStatus('offline-test', 'pass', `${cacheNames.length} caches found`);
+                        log('✅ Offline support: ' + cacheNames.length + ' caches');
+                    } else {
+                        updateTestStatus('offline-test', 'fail', 'No caches found');
+                        log('❌ Offline support: No caches');
+                    }
+                } catch (error) {
+                    updateTestStatus('offline-test', 'fail', 'Error checking caches');
+                    log('❌ Offline support error: ' + error.message);
+                }
+            } else {
+                updateTestStatus('offline-test', 'fail', 'Not supported');
+                log('❌ Offline support: Not supported');
+            }
+            
+            // Test Icons
+            try {
+                const testIconResponse = await fetch('/icons/icon-192x192.svg');
+                if (testIconResponse.ok) {
+                    updateTestStatus('icons-test', 'pass', 'Icons accessible');
+                    log('✅ Icons: Accessible');
+                } else {
+                    updateTestStatus('icons-test', 'fail', 'Icons not found');
+                    log('❌ Icons: Not found');
+                }
+            } catch (error) {
+                updateTestStatus('icons-test', 'fail', 'Error loading icons');
+                log('❌ Icons error: ' + error.message);
+            }
+            
+            // Test Cache Storage
+            if ('caches' in window) {
+                try {
+                    const cache = await caches.open('test-cache');
+                    await cache.put('/test', new Response('test'));
+                    const cachedResponse = await cache.match('/test');
+                    if (cachedResponse) {
+                        updateTestStatus('cache-test', 'pass', 'Working correctly');
+                        log('✅ Cache Storage: Working');
+                        await caches.delete('test-cache');
+                    } else {
+                        updateTestStatus('cache-test', 'fail', 'Not working');
+                        log('❌ Cache Storage: Not working');
+                    }
+                } catch (error) {
+                    updateTestStatus('cache-test', 'fail', 'Error: ' + error.message);
+                    log('❌ Cache Storage error: ' + error.message);
+                }
+            } else {
+                updateTestStatus('cache-test', 'fail', 'Not supported');
+                log('❌ Cache Storage: Not supported');
+            }
+            
+            log('Tests completed!');
+        }
+        
+        async function clearCache() {
+            if ('caches' in window) {
+                try {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                    log('🗑️ All caches cleared');
+                    alert('Cache cleared! Refresh the page.');
+                } catch (error) {
+                    log('❌ Error clearing cache: ' + error.message);
+                }
+            }
+        }
+        
+        function testInstall() {
+            if (window.deferredPrompt) {
+                window.deferredPrompt.prompt();
+                log('📱 Install prompt triggered');
+            } else {
+                log('📱 Install prompt not available');
+                alert('Install prompt not available. Try visiting the main app first.');
+            }
+        }
+        
+        // Auto-run tests on load
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runTests, 1000);
+        });
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredPrompt = e;
+            log('💡 Install prompt became available');
+            updateTestStatus('install-test', 'pass', 'Available now!');
+        });
+        
+        window.addEventListener('appinstalled', (e) => {
+            log('🎉 App was installed!');
+            updateTestStatus('install-test', 'pass', 'Successfully installed!');
+        });
+    </script>
+</body>
+</html>
