@@ -312,6 +312,9 @@
         </div>
     </div>
 
+    <!-- PWA Banner Backdrop -->
+    <div id="pwaBannerBackdrop" class="pwa-banner-backdrop"></div>
+
     <!-- Offline Indicator -->
     <div id="offlineIndicator" class="offline-indicator" style="display: none;">
         <div class="offline-content">
@@ -403,10 +406,16 @@
         // PWA Install Banner Functions
         function showInstallBanner() {
             const banner = document.getElementById('pwaInstallBanner');
+            const backdrop = document.getElementById('pwaBannerBackdrop');
             const installBtn = document.getElementById('pwaInstallBtn');
             const dismissBtn = document.getElementById('pwaDismissBtn');
             
             if (banner && !localStorage.getItem('pwa-install-dismissed')) {
+                // Show backdrop on mobile
+                if (window.innerWidth <= 768) {
+                    backdrop.classList.add('active');
+                }
+                
                 banner.style.display = 'block';
                 banner.classList.add('banner-slide-in');
                 
@@ -424,15 +433,27 @@
                     localStorage.setItem('pwa-install-dismissed', 'true');
                     hideBanner(banner);
                 });
+                
+                // Close banner when clicking backdrop
+                backdrop.addEventListener('click', () => {
+                    localStorage.setItem('pwa-install-dismissed', 'true');
+                    hideBanner(banner);
+                });
             }
         }
 
         function showUpdateBanner(registration) {
             const banner = document.getElementById('pwaUpdateBanner');
+            const backdrop = document.getElementById('pwaBannerBackdrop');
             const updateBtn = document.getElementById('pwaUpdateBtn');
             const dismissBtn = document.getElementById('pwaUpdateDismissBtn');
             
             if (banner) {
+                // Show backdrop on mobile
+                if (window.innerWidth <= 768) {
+                    backdrop.classList.add('active');
+                }
+                
                 banner.style.display = 'block';
                 banner.classList.add('banner-slide-in');
                 
@@ -446,11 +467,24 @@
                 dismissBtn.addEventListener('click', () => {
                     hideBanner(banner);
                 });
+                
+                // Close banner when clicking backdrop
+                backdrop.addEventListener('click', () => {
+                    hideBanner(banner);
+                });
             }
         }
 
         function hideBanner(banner) {
+            const backdrop = document.getElementById('pwaBannerBackdrop');
+            
             banner.classList.add('banner-slide-out');
+            
+            // Hide backdrop on mobile
+            if (backdrop) {
+                backdrop.classList.remove('active');
+            }
+            
             setTimeout(() => {
                 banner.style.display = 'none';
                 banner.classList.remove('banner-slide-in', 'banner-slide-out');
