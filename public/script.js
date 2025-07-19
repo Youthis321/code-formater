@@ -1026,11 +1026,15 @@ async function downloadAsImage() {
         
         console.log('Standard download started...'); // Debug
         
-        // Use universal download function with standard options
+        // Detect mobile device and adjust width accordingly
+        const isMobile = window.innerWidth <= 768;
+        const imageWidth = isMobile ? Math.min(window.innerWidth - 40, 600) : 800;
+        
+        // Use universal download function with responsive options
         await downloadCodeAsImage(code, {
             showLineNumbers: false,
-            enableWordWrap: false,
-            width: 800
+            enableWordWrap: isMobile, // Enable word wrap on mobile for better layout
+            width: imageWidth
         });
         
         showNotification('📷 Standard image berhasil di-download!', 'success');
@@ -1060,11 +1064,15 @@ async function downloadAsImageFormatted() {
         
         console.log('Formatted download started...'); // Debug
         
-        // Use universal download function with formatting options
+        // Detect mobile device and adjust width accordingly
+        const isMobile = window.innerWidth <= 768;
+        const imageWidth = isMobile ? Math.min(window.innerWidth - 40, 650) : 900;
+        
+        // Use universal download function with responsive formatting options
         await downloadCodeAsImage(code, {
             showLineNumbers: true,
             enableWordWrap: true,
-            width: 900
+            width: imageWidth
         });
         
         showNotification('📄 Formatted image berhasil di-download!', 'success');
@@ -1087,11 +1095,15 @@ async function downloadFromPreviewModal() {
         
         console.log('Modal standard download started...'); // Debug
         
-        // Use universal download function with standard options
+        // Detect mobile device and adjust width accordingly
+        const isMobile = window.innerWidth <= 768;
+        const imageWidth = isMobile ? Math.min(window.innerWidth - 40, 600) : 800;
+        
+        // Use universal download function with responsive options
         await downloadCodeAsImage(null, {
             showLineNumbers: false,
-            enableWordWrap: false,
-            width: 800
+            enableWordWrap: isMobile, // Enable word wrap on mobile
+            width: imageWidth
         });
         
         showNotification('📷 Standard image berhasil di-download!', 'success');
@@ -1114,11 +1126,15 @@ async function downloadFormattedFromPreviewModal() {
         
         console.log('Modal formatted download started...'); // Debug
         
-        // Use universal download function with formatting options
+        // Detect mobile device and adjust width accordingly
+        const isMobile = window.innerWidth <= 768;
+        const imageWidth = isMobile ? Math.min(window.innerWidth - 40, 650) : 900;
+        
+        // Use universal download function with responsive formatting options
         await downloadCodeAsImage(null, {
             showLineNumbers: true,
             enableWordWrap: true,
-            width: 900
+            width: imageWidth
         });
         
         showNotification('📄 Formatted image berhasil di-download!', 'success');
@@ -1214,19 +1230,26 @@ function createTempPreviewElement(code, options = {}) {
         width = 800
     } = options;
     
+    // Detect mobile for responsive styling
+    const isMobile = window.innerWidth <= 768;
+    const fontSize = isMobile ? '12px' : '14px';
+    const headerPadding = isMobile ? '12px 16px' : '15px 20px';
+    const codePadding = isMobile ? '16px' : '25px';
+    const dotSize = isMobile ? '12px' : '14px';
+    
     const tempDiv = document.createElement('div');
     tempDiv.style.cssText = `
         position: fixed;
         top: -9999px;
         left: -9999px;
         background: #2d3748;
-        border-radius: 10px;
+        border-radius: ${isMobile ? '8px' : '10px'};
         overflow: hidden;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         width: ${width}px;
         min-height: 200px;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-        font-size: 14px;
+        font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: ${fontSize};
         font-weight: 400;
         z-index: 10000;
     `;
@@ -1245,19 +1268,19 @@ function createTempPreviewElement(code, options = {}) {
     };
     
     const lineNumbersClass = showLineNumbers ? 'line-numbers' : '';
-    const wordWrapStyle = enableWordWrap ? 'white-space: pre-wrap; word-wrap: break-word;' : 'white-space: pre;';
+    const wordWrapStyle = enableWordWrap ? 'white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word;' : 'white-space: pre; overflow-x: auto;';
     
     tempDiv.innerHTML = `
-        <div style="background: #4a5568; padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #2d3748;">
-            <div style="display: flex; gap: 8px;">
-                <span style="width: 14px; height: 14px; border-radius: 50%; background: #ff5f56; display: block;"></span>
-                <span style="width: 14px; height: 14px; border-radius: 50%; background: #ffbd2e; display: block;"></span>
-                <span style="width: 14px; height: 14px; border-radius: 50%; background: #27ca3f; display: block;"></span>
+        <div style="background: #4a5568; padding: ${headerPadding}; display: flex; align-items: center; gap: ${isMobile ? '12px' : '15px'}; border-bottom: 1px solid #2d3748;">
+            <div style="display: flex; gap: ${isMobile ? '6px' : '8px'};">
+                <span style="width: ${dotSize}; height: ${dotSize}; border-radius: 50%; background: #ff5f56; display: block;"></span>
+                <span style="width: ${dotSize}; height: ${dotSize}; border-radius: 50%; background: #ffbd2e; display: block;"></span>
+                <span style="width: ${dotSize}; height: ${dotSize}; border-radius: 50%; background: #27ca3f; display: block;"></span>
             </div>
-            <div style="color: #e2e8f0; font-size: 14px; font-weight: 500; font-family: 'Consolas', 'Monaco', 'Courier New', monospace;">${extensions[currentLanguage] || 'code.txt'}</div>
+            <div style="color: #e2e8f0; font-size: ${fontSize}; font-weight: 500; font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;">${extensions[currentLanguage] || 'code.txt'}</div>
         </div>
-        <div style="background: #1a202c; padding: 25px; color: #e2e8f0; font-size: 14px; line-height: 1.6; min-height: 150px;">
-            <pre class="${lineNumbersClass}" style="margin: 0; background: transparent; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 14px; font-weight: 400; ${wordWrapStyle} color: #e2e8f0;"><code class="language-${currentLanguage}" style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 14px; font-weight: 400; color: #e2e8f0;"></code></pre>
+        <div style="background: #1a202c; padding: ${codePadding}; color: #e2e8f0; font-size: ${fontSize}; line-height: ${isMobile ? '1.5' : '1.6'}; min-height: 150px; max-width: ${width - (isMobile ? 32 : 50)}px; box-sizing: border-box;">
+            <pre class="${lineNumbersClass}" style="margin: 0; background: transparent; font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace; font-size: ${fontSize}; font-weight: 400; ${wordWrapStyle} color: #e2e8f0; max-width: 100%; box-sizing: border-box;"><code class="language-${currentLanguage}" style="font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace; font-size: ${fontSize}; font-weight: 400; color: #e2e8f0; ${wordWrapStyle}"></code></pre>
         </div>
     `;
     
